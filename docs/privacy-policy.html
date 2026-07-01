@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — TillCounter Pro</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.7;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+      color: #fff;
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+
+    header .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      opacity: 0.7;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 32px;
+      letter-spacing: 0.3px;
+    }
+
+    section {
+      margin-bottom: 36px;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    p { margin-bottom: 12px; font-size: 0.97rem; color: #334155; }
+    ul { margin: 8px 0 12px 20px; }
+    li { margin-bottom: 6px; font-size: 0.97rem; color: #334155; }
+
+    .highlight-box {
+      background: #f0f9ff;
+      border-left: 4px solid #0ea5e9;
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    .highlight-box p { margin: 0; color: #0c4a6e; font-weight: 500; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+
+    .data-table th {
+      background: #f1f5f9;
+      color: #475569;
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .pill-no  { background: #fef2f2; color: #991b1b; border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: 0.8rem; }
+    .pill-yes { background: #f0fdf4; color: #166534; border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: 0.8rem; }
+
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    a { color: #0ea5e9; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="icon">🏦</div>
+  <h1>TillCounter Pro</h1>
+  <p>Privacy Policy</p>
+</header>
+
+<main>
+
+  <div class="badge">✅ No data leaves your device</div>
+
+  <section>
+    <h2>Overview</h2>
+    <p>
+      TillCounter Pro ("the App") is a cash counting and till management tool for retail and hospitality teams.
+      This Privacy Policy explains how the App handles information.
+    </p>
+    <div class="highlight-box">
+      <p>TillCounter Pro does not collect, transmit, sell, or share any personal or business data.
+      All information you enter is stored exclusively on your device.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Data We Store (On Your Device Only)</h2>
+    <p>The App stores the following data locally using SQLite and AsyncStorage on your device:</p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Data Type</th>
+          <th>Purpose</th>
+          <th>Sent Externally?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Till names &amp; float amounts</td>
+          <td>Till configuration</td>
+          <td><span class="pill-no">Never</span></td>
+        </tr>
+        <tr>
+          <td>Count session totals &amp; timestamps</td>
+          <td>History &amp; reports</td>
+          <td><span class="pill-no">Never</span></td>
+        </tr>
+        <tr>
+          <td>Denomination quantities per session</td>
+          <td>Denomination breakdown</td>
+          <td><span class="pill-no">Never</span></td>
+        </tr>
+        <tr>
+          <td>Manager name (optional)</td>
+          <td>Session attribution</td>
+          <td><span class="pill-no">Never</span></td>
+        </tr>
+        <tr>
+          <td>App preferences (currency, dark mode)</td>
+          <td>User preferences</td>
+          <td><span class="pill-no">Never</span></td>
+        </tr>
+        <tr>
+          <td>Draft counts in progress</td>
+          <td>Temporary state between screens</td>
+          <td><span class="pill-no">Never</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Data We Do NOT Collect</h2>
+    <ul>
+      <li>No personal identifiers (name, email, phone number, address)</li>
+      <li>No device identifiers (IMEI, advertising ID, serial number)</li>
+      <li>No location data</li>
+      <li>No analytics or usage tracking</li>
+      <li>No crash reporting sent to third parties</li>
+      <li>No advertising or marketing data</li>
+      <li>No camera, microphone, or contacts access</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Internet &amp; Permissions</h2>
+    <p>
+      TillCounter Pro requests <strong>no device permissions</strong>. The App does not make any network
+      requests and does not require an internet connection to function. There is no backend server, no
+      account system, and no cloud sync.
+    </p>
+  </section>
+
+  <section>
+    <h2>Data Export</h2>
+    <p>
+      The App provides optional CSV and PDF export features. These exports are generated entirely on your
+      device and shared only via your device's native share sheet (e.g. email, messaging, file manager).
+      TillCounter Pro does not receive a copy of any exported data.
+    </p>
+  </section>
+
+  <section>
+    <h2>Data Retention &amp; Deletion</h2>
+    <p>
+      All data is stored on your device for as long as the App is installed. You can delete individual
+      history entries within the App at any time. Uninstalling the App removes all associated data
+      from your device permanently.
+    </p>
+  </section>
+
+  <section>
+    <h2>Third-Party Services</h2>
+    <p>
+      TillCounter Pro does not integrate with any third-party analytics, advertising, or data processing
+      services. The App is built using the <a href="https://expo.dev" target="_blank">Expo</a> framework.
+      No Expo services that transmit user data are used in this App.
+    </p>
+  </section>
+
+  <section>
+    <h2>Children's Privacy</h2>
+    <p>
+      TillCounter Pro is not directed at children under the age of 13 and does not knowingly collect
+      any information from children.
+    </p>
+  </section>
+
+  <section>
+    <h2>Changes to This Policy</h2>
+    <p>
+      If the App's data practices change in a future update, this Privacy Policy will be updated
+      accordingly. Continued use of the App after any changes constitutes acceptance of the revised policy.
+    </p>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <p>
+      If you have questions about this Privacy Policy, please contact the developer via the Google Play Store
+      listing for TillCounter Pro.
+    </p>
+  </section>
+
+  <p style="font-size:0.85rem; color:#94a3b8; margin-top: 40px;">
+    Last updated: June 2026 &nbsp;·&nbsp; App version 1.0.0
+  </p>
+
+</main>
+
+<footer>
+  &copy; 2026 tndnoobs &nbsp;·&nbsp; TillCounter Pro &nbsp;·&nbsp; All rights reserved
+</footer>
+
+</body>
+</html>
