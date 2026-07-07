@@ -45,4 +45,10 @@ export const initDb = async () => {
       FOREIGN KEY (denominationId) REFERENCES denominations (id) ON DELETE RESTRICT
     );
   `);
+
+  try {
+    await db.execAsync(`ALTER TABLE count_sessions ADD COLUMN sessionType TEXT DEFAULT 'closing';`);
+  } catch (e) {
+    // Column might already exist, ignore
+  }
 };

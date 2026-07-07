@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deal Closer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/TillCounterPro/dealCloser/assets/index-Dv5trZJJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/TillCounterPro/dealCloser/assets/index-Bnp59aR7.css">
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="glass-card">
+        <div class="stepper">
+          <div class="step active" id="indicator-1">1</div>
+          <div class="step-line"></div>
+          <div class="step" id="indicator-2">2</div>
+          <div class="step-line"></div>
+          <div class="step" id="indicator-3">3</div>
+        </div>
+
+        <form id="deal-form">
+          <!-- Step 1: Personal Info -->
+          <div class="form-step active" id="step-1">
+            <h2>Personal Information</h2>
+            <p class="subtitle">Let's start with your details</p>
+            <div class="input-group">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" name="firstName" required placeholder="John">
+            </div>
+            <div class="input-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" name="lastName" required placeholder="Doe">
+            </div>
+            <div class="input-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required placeholder="john@example.com">
+            </div>
+            <div class="input-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" required placeholder="(555) 000-0000">
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-primary next-btn" data-next="2">Next Step</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Government ID -->
+          <div class="form-step" id="step-2">
+            <h2>Government ID</h2>
+            <p class="subtitle">Please provide a photo of your ID (Optional)</p>
+            
+            <div class="camera-container">
+              <video id="videoElement" autoplay playsinline style="display:none;"></video>
+              <canvas id="canvasElement" style="display:none;"></canvas>
+              <div id="imagePreview" style="display:none;">
+                <img id="capturedImage" src="" alt="ID Preview">
+              </div>
+              <div class="camera-actions">
+                <button type="button" class="btn btn-secondary" id="startCameraBtn">Start Camera</button>
+                <button type="button" class="btn btn-primary" id="captureBtn" style="display:none;">Capture Photo</button>
+                <button type="button" class="btn btn-secondary" id="retakeBtn" style="display:none;">Retake</button>
+              </div>
+            </div>
+
+            <div class="btn-group split">
+              <button type="button" class="btn btn-outline prev-btn" data-prev="1">Back</button>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="button" class="btn btn-text next-btn" data-next="3">Skip for now</button>
+                <button type="button" class="btn btn-primary next-btn" data-next="3" id="step2Next">Next</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Business Info -->
+          <div class="form-step" id="step-3">
+            <h2>Business Details</h2>
+            <p class="subtitle">Tell us about your business</p>
+            <div class="input-group">
+              <label for="businessName">Business Name</label>
+              <input type="text" id="businessName" name="businessName" required placeholder="Acme Corp">
+            </div>
+            <div class="input-group">
+              <label for="address">Business Address</label>
+              <textarea id="address" name="address" rows="3" required placeholder="123 Main St..."></textarea>
+            </div>
+            
+            <div class="btn-group split">
+              <button type="button" class="btn btn-outline prev-btn" data-prev="2">Back</button>
+              <button type="submit" class="btn btn-success" id="submitBtn">Complete Registration</button>
+            </div>
+          </div>
+          
+          <!-- Success State -->
+          <div class="form-step" id="step-success">
+             <div class="success-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                   <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+             </div>
+             <h2>Registration Complete</h2>
+             <p class="subtitle">Thank you for submitting your details. We will be in touch shortly.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

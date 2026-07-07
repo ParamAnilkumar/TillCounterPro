@@ -11,12 +11,25 @@ import { useTillStore } from '../../src/store/useTillStore';
 export default function TillsScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { currencySymbol, defaultFloatAmount } = useSettingsStore();
+  const { currencySymbol, defaultFloatAmount, persons } = useSettingsStore();
   const { draftCounts, savedTills } = useTillStore();
 
   const [tills, setTills] = useState<Till[]>([]);
   const [menuVisible, setMenuVisible] = useState<string | null>(null);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [authDialogVisible, setAuthDialogVisible] = useState(false);
+  const [authName, setAuthName] = useState('');
+  const [authCode, setAuthCode] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authAction, setAuthAction] = useState<'add' | 'edit' | 'delete' | 'duplicate' | 'count'>('add');
+  const [pendingTill, setPendingTill] = useState<Till | null>(null);
+
+  // Start Session Dialog
+  const [startSessionVisible, setStartSessionVisible] = useState(false);
+  const [sessionTime, setSessionTime] = useState<'opening' | 'afternoon' | 'closing' | 'overnight'>('closing');
+  const [sessionExpectedFloat, setSessionExpectedFloat] = useState('');
+  const [sessionCounterName, setSessionCounterName] = useState('');
+
   const [editingTill, setEditingTill] = useState<Till | null>(null);
   const [tillName, setTillName] = useState('');
   const [expectedFloat, setExpectedFloat] = useState(defaultFloatAmount.toString());
@@ -28,9 +41,34 @@ export default function TillsScreen() {
 
   useFocusEffect(useCallback(() => { loadTills(); }, [loadTills]));
 
+  const executeAction = async (action: 'add' | 'edit' | 'delete' | 'duplicate' | 'count', till: Till | null) => {
+    if (action === 'add') {
+      setEditingTill(null);
+      setTillName('');
+      setExpectedFloat(defaultFloatAmount.toString());
+      setNotes('');
+      setDialogVisible(true);
+    } else if (action === 'edit' && till) {
+      setEditingTill(till);
+      setTillName(till.name);
+      setExpectedFloat(till.expectedFloat.toString());
+      setNotes(till.notes || '');
+      setDialogVisible(true);
+    } else if (action === 'delete' && till) {
+      Alert.alert('Delete Till', 'Are you sure you want to delete this till?', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: async () => { await deleteTill(till.id); loadTills(); } },
+      ]);
+    } else if (action === 'duplicate' && till) {
+      await addTill({ name: `${till.name} (Copy)`, expectedFloat: till.expectedFloat, notes: till.notes });
+      loadTills();
+    }
+  };
+
   const handleSave = async () => {
     if (!tillName.trim()) return;
-    const floatVal = parseFloat(expectedFloat) || 0;
+    const floatVal = 0;
+    
     if (editingTill) {
       await updateTill(editingTill.id, { name: tillName, expectedFloat: floatVal, notes });
     } else {
@@ -40,27 +78,55 @@ export default function TillsScreen() {
     loadTills();
   };
 
-  const handleEdit = (till: Till) => {
+  const requireAuth = (action: 'add' | 'edit' | 'delete' | 'duplicate' | 'count', till: Till | null = null) => {
     setMenuVisible(null);
-    setEditingTill(till);
-    setTillName(till.name);
-    setExpectedFloat(till.expectedFloat.toString());
-    setNotes(till.notes || '');
-    setDialogVisible(true);
+    setAuthAction(action);
+    setPendingTill(till);
+    setAuthName('');
+    setAuthCode('');
+    setAuthError('');
+    setAuthDialogVisible(true);
   };
 
-  const handleDelete = (id: string) => {
-    setMenuVisible(null);
-    Alert.alert('Delete Till', 'Are you sure you want to delete this till?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteTill(id); loadTills(); } },
-    ]);
+  const handleAuthSubmit = () => {
+    const matchedPerson = persons.find(
+      p => p.name.toLowerCase() === authName.trim().toLowerCase() && p.code === authCode
+    );
+
+    if (!matchedPerson) {
+      setAuthError('Invalid Name or Code.');
+      return;
+    }
+
+    if (authAction !== 'count' && matchedPerson.role !== 'manager') {
+      setAuthError('Only Managers can modify tills.');
+      return;
+    }
+
+    setAuthDialogVisible(false);
+
+    if (authAction === 'count' && pendingTill) {
+      setSessionCounterName(matchedPerson.name);
+      setSessionExpectedFloat(pendingTill.expectedFloat.toString());
+      setSessionTime('closing');
+      setStartSessionVisible(true);
+    } else {
+      executeAction(authAction, pendingTill);
+    }
   };
 
-  const handleDuplicate = async (till: Till) => {
-    setMenuVisible(null);
-    await addTill({ name: `${till.name} (Copy)`, expectedFloat: till.expectedFloat, notes: till.notes });
-    loadTills();
+  const handleStartSession = () => {
+    if (!pendingTill) return;
+    setStartSessionVisible(false);
+    router.push({ 
+      pathname: '/count/[id]', 
+      params: { 
+        id: pendingTill.id, 
+        counterName: sessionCounterName,
+        sessionType: sessionTime,
+        expectedFloat: sessionExpectedFloat
+      } 
+    });
   };
 
   const getTillDraftTotal = (till: Till) => {
@@ -116,7 +182,7 @@ export default function TillsScreen() {
           return (
             <Card
               style={[styles.card, { backgroundColor: theme.colors.surface }]}
-              onPress={() => router.push(`/count/${item.id}`)}
+              onPress={() => requireAuth('count', item)}
               elevation={2}
             >
               <Card.Content style={styles.cardContent}>
@@ -126,9 +192,6 @@ export default function TillsScreen() {
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: '700' }}>
                     {item.name}
-                  </Text>
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    Float: {currencySymbol}{item.expectedFloat.toFixed(2)}
                   </Text>
                   {showDraftBadge && (
                     <View style={[styles.draftBadge, { backgroundColor: theme.colors.secondaryContainer }]}>
@@ -151,9 +214,9 @@ export default function TillsScreen() {
                     />
                   }
                 >
-                  <Menu.Item leadingIcon="pencil-outline" onPress={() => handleEdit(item)} title="Edit" />
-                  <Menu.Item leadingIcon="content-copy" onPress={() => handleDuplicate(item)} title="Duplicate" />
-                  <Menu.Item leadingIcon="delete-outline" onPress={() => handleDelete(item.id)} title="Delete" titleStyle={{ color: theme.colors.error }} />
+                  <Menu.Item leadingIcon="pencil-outline" onPress={() => requireAuth('edit', item)} title="Edit" />
+                  <Menu.Item leadingIcon="content-copy" onPress={() => requireAuth('duplicate', item)} title="Duplicate" />
+                  <Menu.Item leadingIcon="delete-outline" onPress={() => requireAuth('delete', item)} title="Delete" titleStyle={{ color: theme.colors.error }} />
                 </Menu>
               </Card.Content>
             </Card>
@@ -166,20 +229,81 @@ export default function TillsScreen() {
           <Dialog.Title style={{ fontWeight: '700' }}>{editingTill ? 'Edit Till' : 'New Till'}</Dialog.Title>
           <Dialog.Content>
             <TextInput label="Till Name" value={tillName} onChangeText={setTillName} style={styles.input} mode="outlined" />
-            <TextInput
-              label="Expected Float"
-              value={expectedFloat}
-              onChangeText={setExpectedFloat}
-              keyboardType="numeric"
-              style={styles.input}
-              mode="outlined"
-              left={<TextInput.Affix text={currencySymbol} />}
-            />
             <TextInput label="Notes (Optional)" value={notes} onChangeText={setNotes} style={styles.input} multiline mode="outlined" />
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDialogVisible(false)}>Cancel</Button>
             <Button mode="contained" onPress={handleSave} style={{ borderRadius: 8 }}>Save</Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        <Dialog visible={authDialogVisible} onDismiss={() => setAuthDialogVisible(false)} style={{ borderRadius: 20 }}>
+          <Dialog.Title style={{ fontWeight: '700' }}>Authentication Required</Dialog.Title>
+          <Dialog.Content>
+            {authError ? <Text style={{ color: theme.colors.error, marginBottom: 8, fontSize: 12 }}>{authError}</Text> : null}
+            <Text style={{ marginBottom: 16, color: theme.colors.onSurfaceVariant }}>
+              Please enter an authorized person's name and 4-digit code to {authAction === 'count' ? 'access this till' : 'modify tills'}.
+            </Text>
+            <TextInput
+              label="Person Name"
+              value={authName}
+              onChangeText={n => { setAuthName(n); setAuthError(''); }}
+              style={styles.input}
+              mode="outlined"
+            />
+            <TextInput
+              label="4-Digit Code"
+              value={authCode}
+              onChangeText={c => { setAuthCode(c); setAuthError(''); }}
+              keyboardType="number-pad"
+              maxLength={4}
+              style={styles.input}
+              mode="outlined"
+              secureTextEntry
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setAuthDialogVisible(false)}>Cancel</Button>
+            <Button mode="contained" onPress={handleAuthSubmit} style={{ borderRadius: 8 }}>Verify</Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        {/* Start Session Dialog */}
+        <Dialog visible={startSessionVisible} onDismiss={() => setStartSessionVisible(false)} style={{ borderRadius: 20 }}>
+          <Dialog.Title style={{ fontWeight: '700' }}>Start Session</Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ marginBottom: 16, color: theme.colors.onSurfaceVariant }}>
+              Configure your count session for {pendingTill?.name}.
+            </Text>
+            
+            <Text style={{ marginBottom: 8, color: theme.colors.onSurfaceVariant, fontSize: 12, fontWeight: '600' }}>SESSION TIME</Text>
+            <View style={{ marginBottom: 16, flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {['opening', 'afternoon', 'closing', 'overnight'].map(type => (
+                <Button
+                  key={type}
+                  mode={sessionTime === type ? 'contained' : 'outlined'}
+                  onPress={() => setSessionTime(type as any)}
+                  compact
+                  style={{ borderRadius: 8 }}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Button>
+              ))}
+            </View>
+
+            <TextInput
+              label="Expected Amount"
+              value={sessionExpectedFloat}
+              onChangeText={setSessionExpectedFloat}
+              keyboardType="numeric"
+              style={styles.input}
+              mode="outlined"
+              left={<TextInput.Affix text={currencySymbol} />}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setStartSessionVisible(false)}>Cancel</Button>
+            <Button mode="contained" onPress={handleStartSession} style={{ borderRadius: 8 }} icon="play">Start</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -188,13 +312,7 @@ export default function TillsScreen() {
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color={theme.colors.onPrimary}
-        onPress={() => {
-          setEditingTill(null);
-          setTillName('');
-          setExpectedFloat(defaultFloatAmount.toString());
-          setNotes('');
-          setDialogVisible(true);
-        }}
+        onPress={() => requireAuth('add')}
       />
     </View>
   );

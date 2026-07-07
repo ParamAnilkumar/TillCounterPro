@@ -23,6 +23,7 @@ export interface CountSession {
   difference: number;
   managerName?: string;
   notes?: string;
+  sessionType?: string;
 }
 
 export interface CountItem {

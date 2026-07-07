@@ -9,11 +9,12 @@ import { useSettingsStore } from '../../src/store/useSettingsStore';
 import { useTillStore } from '../../src/store/useTillStore';
 
 export default function CountSessionScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, counterName, sessionType, expectedFloat: paramExpectedFloat } = useLocalSearchParams<{ id: string, counterName?: string, sessionType?: string, expectedFloat?: string }>();
   const theme = useTheme();
   const router = useRouter();
 
   const { currencySymbol, managerName } = useSettingsStore();
+  const finalCounterName = counterName || managerName;
   const { draftCounts, setQuantity, clearDraft, markSaved } = useTillStore();
   const activeQuantities = draftCounts[id] || {};
 
@@ -36,7 +37,8 @@ export default function CountSessionScreen() {
     return sum + qty * denom.value;
   }, 0);
 
-  const difference = actualTotal - till.expectedFloat;
+  const activeExpectedFloat = paramExpectedFloat ? parseFloat(paramExpectedFloat) : till.expectedFloat;
+  const difference = actualTotal - activeExpectedFloat;
   const diffColor = difference === 0 ? theme.colors.primary : difference > 0 ? theme.colors.secondary : theme.colors.error;
 
   const handleSave = async () => {
@@ -53,14 +55,15 @@ export default function CountSessionScreen() {
           await saveCountSession({
             tillId: till.id,
             timestamp: new Date().toISOString(),
-            expectedFloat: till.expectedFloat,
+            expectedFloat: activeExpectedFloat,
             actualTotal,
             difference,
-            managerName,
+            managerName: finalCounterName,
             notes,
+            sessionType: sessionType || 'closing',
           }, items);
 
-          markSaved(till.id);
+          clearDraft(till.id);
           router.back();
         },
       },
@@ -124,7 +127,7 @@ export default function CountSessionScreen() {
                 EXPECTED
               </Text>
               <Text variant="titleLarge" style={{ color: theme.colors.onPrimaryContainer, fontWeight: '700' }}>
-                {currencySymbol}{till.expectedFloat.toFixed(2)}
+                {currencySymbol}{activeExpectedFloat.toFixed(2)}
               </Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: theme.colors.onPrimaryContainer, opacity: 0.2 }]} />

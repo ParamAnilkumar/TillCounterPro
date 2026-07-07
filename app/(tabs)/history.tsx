@@ -100,6 +100,7 @@ export default function HistoryScreen() {
                       hour: '2-digit', minute: '2-digit',
                     })}
                     {item.managerName ? ` · ${item.managerName}` : ''}
+                    {item.sessionType ? ` · ${item.sessionType.charAt(0).toUpperCase() + item.sessionType.slice(1)}` : ''}
                   </Text>
                 </View>
                 <View style={{ alignItems: 'flex-end', marginRight: 4 }}>

@@ -52,7 +52,7 @@ export default function RootLayout() {
         <Stack.Screen name="count/[id]" options={{ title: 'Till Count' }} />
         <Stack.Screen name="combine" options={{ title: 'Combine Tills' }} />
         <Stack.Screen name="denominations" options={{ title: 'Manage Denominations' }} />
-        <Stack.Screen name="reports" options={{ title: 'Reports' }} />
+
         <Stack.Screen name="+not-found" />
       </Stack>
     </PaperProvider>

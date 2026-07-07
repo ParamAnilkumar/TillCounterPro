@@ -61,8 +61,8 @@ export const saveCountSession = async (session: Omit<CountSession, 'id'>, items:
   
   await db.withTransactionAsync(async () => {
     await db.runAsync(
-      'INSERT INTO count_sessions (id, tillId, timestamp, expectedFloat, actualTotal, difference, managerName, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [sessionId, session.tillId, session.timestamp, session.expectedFloat, session.actualTotal, session.difference, session.managerName || null, session.notes || null]
+      'INSERT INTO count_sessions (id, tillId, timestamp, expectedFloat, actualTotal, difference, managerName, notes, sessionType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [sessionId, session.tillId, session.timestamp, session.expectedFloat, session.actualTotal, session.difference, session.managerName || null, session.notes || null, session.sessionType || 'closing']
     );
 
     for (const item of items) {

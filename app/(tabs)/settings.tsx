@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, TextInput, Switch, List, useTheme, Button, Surface, Divider } from 'react-native-paper';
+import { Text, TextInput, Switch, List, useTheme, Button, Surface, Divider, Dialog, Portal } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSettingsStore } from '../../src/store/useSettingsStore';
 import { useRouter } from 'expo-router';
@@ -8,6 +9,25 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const settings = useSettingsStore();
+
+  const [passwordDialogVisible, setPasswordDialogVisible] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+
+  const handleManagePersons = () => {
+    setPasswordInput('');
+    setPasswordError(false);
+    setPasswordDialogVisible(true);
+  };
+
+  const verifyPassword = () => {
+    if (passwordInput === '3254') {
+      setPasswordDialogVisible(false);
+      router.push('/persons');
+    } else {
+      setPasswordError(true);
+    }
+  };
 
   return (
     <ScrollView
@@ -118,21 +138,21 @@ export default function SettingsScreen() {
         </Surface>
       </View>
 
-      {/* Data Section */}
+      {/* Personnel Section */}
       <View style={styles.section}>
         <Text variant="labelLarge" style={[styles.sectionLabel, { color: theme.colors.primary }]}>
-          DATA & BACKUP
+          PERSONNEL
         </Text>
         <Surface style={[styles.card, { backgroundColor: theme.colors.surface }]} elevation={1}>
           <List.Item
-            title="Export Reports"
-            description="Generate Daily / Weekly / Monthly reports"
+            title="Manage Persons"
+            description="Add or remove authorized persons for tills"
             titleStyle={{ color: theme.colors.onSurface, fontWeight: '600' }}
             descriptionStyle={{ color: theme.colors.onSurfaceVariant, fontSize: 12 }}
-            onPress={() => router.push('/reports')}
+            onPress={handleManagePersons}
             left={() => (
-              <View style={[styles.listIcon, { backgroundColor: `${theme.colors.tertiary}22` }]}>
-                <MaterialCommunityIcons name="file-chart-outline" size={18} color={theme.colors.tertiary} />
+              <View style={[styles.listIcon, { backgroundColor: theme.colors.primaryContainer }]}>
+                <MaterialCommunityIcons name="account-group-outline" size={18} color={theme.colors.primary} />
               </View>
             )}
             right={() => (
@@ -141,6 +161,37 @@ export default function SettingsScreen() {
           />
         </Surface>
       </View>
+
+
+      <Portal>
+        <Dialog visible={passwordDialogVisible} onDismiss={() => setPasswordDialogVisible(false)} style={{ borderRadius: 20 }}>
+          <Dialog.Title style={{ fontWeight: '700' }}>Admin Authentication</Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ marginBottom: 16, color: theme.colors.onSurfaceVariant }}>
+              Please enter the admin password to access personnel settings.
+            </Text>
+            <TextInput
+              label="Password"
+              value={passwordInput}
+              onChangeText={(text) => { setPasswordInput(text); setPasswordError(false); }}
+              secureTextEntry
+              mode="outlined"
+              error={passwordError}
+              autoFocus
+              onSubmitEditing={verifyPassword}
+            />
+            {passwordError && (
+              <Text style={{ color: theme.colors.error, marginTop: 8, fontSize: 12 }}>
+                Incorrect password. Please try again.
+              </Text>
+            )}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setPasswordDialogVisible(false)}>Cancel</Button>
+            <Button mode="contained" onPress={verifyPassword} style={{ borderRadius: 8 }}>Verify</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </ScrollView>
   );
 }
